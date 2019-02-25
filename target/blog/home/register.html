@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+	<base href="http://localhost:8080/blog/"><link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
+	<title>Home</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="keywords" content="" />
+	<link href="static/css/login.css" rel='stylesheet' type='text/css'/>
+	<script src="static/js/vue.js" type="text/javascript"></script>
+	<script src="static/js/axios.min.js" type="text/javascript"></script>
+</head>
+<body>
+<h1><a href="home/index.html">Smile</a></h1>
+
+<div class="log">
+	<div class="content2">
+		<h2>注册</h2>
+		<form id="commentForm" @submit.prevent="submit">
+			<input type="text" id="username" name="username" placeholder="用户名" v-model="username"/>
+			<p></p>		
+			<input type="email" id="email" name="email" placeholder="电子邮件" v-model="email">
+			<p></p>
+			<input type="password" id="password" name="password" placeholder="密码" v-model="password">
+			<p></p>
+			<input type="password" id="confirmpassword" name="confirmpassword" placeholder="密码确认" v-model="confirmpassword">
+			<p></p>
+			<input type="text" id="captcha" name="captcha" placeholder="验证码"v-model="captcha" />
+			<p></p>
+			<input type="submit" class="register" value="注册">
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="footer">
+	<p><a target="_blank" href="home/index.html">201641404232 201641404219</a></p>
+</div>
+
+
+<script src="static/js/jquery.min.js" type="text/javascript"></script>
+<!--<script src="static/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="static/js/messaes_zh.min.js" type="text/javascript"></script>-->
+<script src ="static/js/register.js" type="text/javascript"></script>
+<!--<script>
+$.validator.setDefaults({
+    submitHandler: function() {
+    	form.submit();
+    }
+});
+$().ready(function() {
+// 在键盘按下并释放及提交后验证提交表单
+  $("#commentForm").validate({
+	  
+	  	errorPlacement: function(error, element) {               
+	  		error.appendTo(element.next());
+		},
+
+	    rules: {
+	      username: {
+	        required: true,
+	        minlength: 3
+	      },
+	      password: {
+	        required: true,
+	        minlength: 3
+	      },
+	      confirmpassword: {
+	        required: true,
+	        minlength: 3,
+	        equalTo: "#password"
+	      },
+	      email: {
+	        required: true,
+	        email: true
+	      },
+	      captcha:{
+	    	  required: true,
+	    	  remote: {
+	  		    url: "validateCode",     //后台处理程序
+	  		    type: "post",               //数据发送方式
+	  		    dataType: "json",           //接受数据格式   
+	  		    data: {                     //要传递的数据
+	  		    	captcha: function() {
+	  		            return $("#captcha").val();
+	  		        }
+	  		    }
+	  		},
+	      }
+	            
+	    },
+	    messages: {
+	      username: {
+	        required: "请输入用户名",
+	        minlength: "用户名必需由两个字符以上组成"
+	      },
+	      password: {
+	        required: "请输入密码",
+	        minlength: "密码长度不能小于3 个字母"
+	      },
+	      confirmpassword: {
+	        required: "请输入密码",
+	        minlength: "密码长度不能小于 3 个字母",
+	        equalTo: "两次密码输入不一致"
+	      },
+	      email: "请输入一个正确的邮箱",
+	      captcha:"验证码错误",
+	    }
+	});
+});
+</script>-->
+<style>
+.error{
+	color:red;
+}
+</style>
+
+</body>
+</html>

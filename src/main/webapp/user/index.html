@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="http://localhost:8080/blog/"><link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>smile</title>
+  <link rel="stylesheet" type="text/css" href="static/layui/css/layui.css">
+  <link rel="stylesheet" type="text/css" href="static/css/main.css">
+</head>
+<body>
+  <div id="vm">
+    <div class="header">
+      <div class="menu-btn">
+        <div class="menu"></div>
+      </div>
+      <h1 class="logo">
+        <a href="home/index.html">
+          <span>MYBLOG</span>
+          <img src="static/img/logo.png">
+        </a>
+      </h1>
+      <div class="nav">
+        <a :href="'user/index.html?bloggerid='+blogger.userid" class="active">文章</a>
+        <a :href="'user/whisper.html?bloggerid='+blogger.userid">微语</a>
+        <a :href="'user/leacots.html?bloggerid='+blogger.userid">留言</a>
+        <a :href="'user/album.html?bloggerid='+blogger.userid">相册</a>
+        <a :href="'user/about.html?bloggerid='+blogger.userid">关于</a>
+      </div>
+      <p class="welcome-text">
+        欢迎来到<span class="name" style="color:red;font-size: 40px">{{blogger.username}}</span>的博客~
+      </p>
+    </div>
+
+    <div class="banner">
+      <div class="cont w1000">
+        <div class="title">
+          <h3>MY<br />BLOG</h3>
+          <h4>well-balanced heart</h4>
+        </div>
+        <div class="amount">
+          <p><span class="text">访问量</span><span class="access">1000</span></p>
+          <p><span class="text">日志</span><span class="daily-record">1000</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tlinks">Collect from <a href="http://www.cssmoban.com/" >网页模板</a></div>
+
+    <div class="content">
+      <div class="cont w1000">
+        <div class="title">
+        <span class="layui-breadcrumb" lay-separator="|">
+          <a href="javascript:;" class="active">设计文章</a>
+          <a href="javascript:;">前端文章</a>
+          <a href="javascript:;">旅游杂记</a>
+        </span>
+        </div>
+
+        <div class="list-item">
+          <template v-for="article in userArticleList">
+            <div class="item">
+              <div class="layui-fluid">
+                <div class="layui-row">
+                  <div class="layui-col-xs12 layui-col-sm4 layui-col-md5">
+                    <!--<div class="img"><img src="static/img/sy_img1.jpg" alt=""></div>-->
+                    <div class="img"><img :src="article.contentimage" alt=""></div>
+
+                  </div>
+                  <div class="layui-col-xs12 layui-col-sm8 layui-col-md7">
+                    <div class="item-cont">
+                      <h3>{{article.title}}<button class="layui-btn layui-btn-danger new-icon">new</button></h3>
+                      <h5>{{article.type}}</h5>
+                      <p>{{article.content.substr(0,120)}}</p>
+                      <a :href="'user/details.html?articleid='+article.articleid" class="go-icon"></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+
+
+        <div id="demo" style="text-align: center;"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrap">
+      <div class="footer w1000">
+        <div class="qrcode">
+          <img src="static/img/erweima.jpg">
+        </div>
+        <div class="practice-mode">
+          <img src="static/img/down_img.jpg">
+          <div class="text">
+            <h4 class="title">我的联系方式</h4>
+            <p>微信<span class="WeChat">1234567890</span></p>
+            <p>邮箱<span class="email">1234567890@qq.com</span></p>
+            <p>More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script type="text/javascript" src="static/layui/layui.js"></script>
+  <script type="text/javascript" src="static/js/vue.js"></script>
+  <script type="text/javascript" src="static/js/axios.min.js"></script>
+  <script type="text/javascript" src="static/js/public.js"></script>
+  <script type="text/javascript">
+    var uivm = new Vue({
+      el:'#vm',
+      data:{
+        bloggerid:'',
+        blogger:'',
+        loginUser:'',
+        userArticleList: ''
+      },
+      mounted:function(){
+        this.bloggerid = getUrlParam("bloggerid");
+        axios({
+          method: "POST",
+          url: "http://localhost:8080/blog/servlet/UserServlet?method=goUserSpace",
+          data: {
+            bloggerid: this.bloggerid
+          },
+          transformRequest: [function(data) {
+            // Do whatever you want to transform the data
+            let ret = ''
+            for(let it in data) {
+              // 如果要发送中文 编码
+              ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            }
+            return ret
+          }],
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(response => {
+          var data = response.data
+          console.log(response.data)
+          this.userArticleList = data.detail.userArticleList
+          this.blogger = data.detail.blogger
+         }).catch(error => console.log(error))
+      }
+    })
+  </script>
+</body>
+</html>

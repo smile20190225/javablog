@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <base href="http://localhost:8080/blog/">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>心情发表</title>
+    <link href="static/css/demo.css" rel="stylesheet" type="text/css">
+
+</head>
+<body class="flipInX animated">
+
+<section id="getintouch">
+    <h1 align="center" style="font-size: 40px;color: red">SMILE</h1>
+    <div class="container" style="border-bottom: 0;">
+        <h1>
+            <span>微语</span>
+        </h1>
+    </div>
+    <div class="container">
+        <form class="contact" action="/blog/servlet/HomeServlet?method=publicArticle" method="post" id="form"  enctype="multipart/form-data">
+
+            <div class="row clearfix">
+                <div class="lbl">
+                    <label for="message">短短的一段心情吐露</label>
+                </div>
+                <div class="ctrl">
+                    <textarea id="message" name="whispercontent" rows="15" cols="10"></textarea>
+                </div>
+            </div>
+
+
+            <div class="row clearfix">
+                <div class="lbl">
+                    <label for="email">微语图片</label>
+                </div>
+                <div class="ctrl" id="TableFile">
+                    <input type='checkbox' name='cbk' />
+                    <input type="file" name="image[]" value="选择照片"/>
+                    <input id="ButtonAdd" type="button" value="+" />
+                    <input id="ButtonSubtract" type="button" value="-" /><br/>
+                </div>
+            </div>
+
+            <div class="row  clearfix">
+                <div class="span10 offset2">
+                    <input type="submit" name="submit" id="submit" class="submit" value="发表">
+                </div>
+            </div>
+        </form>
+
+        <div id="validation">
+        </div>
+    </div>
+</section>
+</body>
+<script src="static/js/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //alert("upload");
+        $("#ButtonAdd").on("click", function () {
+            var content = "";
+            content += "<br/><input type='checkbox' name='cbk' /><input type='file' name='image[]' value='选择照片'/><br/>";
+            $("#TableFile").append(content);
+        });
+
+        $("#ButtonSubtract").on("click", function () {
+            $('input[name="cbk"]').each(function () {
+                if (this.checked) {
+                    $(this).prev().remove();
+                    $(this).next().next().remove();
+                    $(this).next().remove();
+                    $(this).remove();
+                }
+            });
+        });
+    });
+</script>
+</html>
