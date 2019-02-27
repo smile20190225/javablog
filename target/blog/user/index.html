@@ -4,12 +4,12 @@
   <base href="http://localhost:8080/blog/"><link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <title>Document</title>
+  <title>smile</title>
   <link rel="stylesheet" type="text/css" href="static/layui/css/layui.css">
   <link rel="stylesheet" type="text/css" href="static/css/main.css">
 </head>
 <body>
-  <div  id="vm">
+  <div id="vm">
     <div class="header">
       <div class="menu-btn">
         <div class="menu"></div>
@@ -21,11 +21,11 @@
         </a>
       </h1>
       <div class="nav">
-        <a href="user/index.html" class="active">文章</a>
-        <a href="user/whisper.html">微语</a>
-        <a href="user/leacots.html">留言</a>
-        <a href="user/album.html">相册</a>
-        <a href="user/about.html">关于</a>
+        <a :href="'user/index.html?bloggerid='+blogger.userid" class="active">文章</a>
+        <a :href="'user/whisper.html?bloggerid='+blogger.userid">微语</a>
+        <a :href="'user/leacots.html?bloggerid='+blogger.userid">留言</a>
+        <a :href="'user/album.html?bloggerid='+blogger.userid">相册</a>
+        <a :href="'user/about.html?bloggerid='+blogger.userid">关于</a>
       </div>
       <p class="welcome-text">
         欢迎来到<span class="name" style="color:red;font-size: 40px">{{blogger.username}}</span>的博客~
@@ -57,17 +57,14 @@
         </span>
         </div>
 
-
-
         <div class="list-item">
-
           <template v-for="article in userArticleList">
             <div class="item">
               <div class="layui-fluid">
                 <div class="layui-row">
                   <div class="layui-col-xs12 layui-col-sm4 layui-col-md5">
                     <!--<div class="img"><img src="static/img/sy_img1.jpg" alt=""></div>-->
-                    <div class="img"><img src="D:\IDEAworkspace\blog\target\blog\WEB-INF\upload\5\14\e54b9d44-4ae1-4dab-9d8e-98bf6378d799_4.jpg" alt=""></div>
+                    <div class="img"><img :src="article.contentimage" alt=""></div>
 
                   </div>
                   <div class="layui-col-xs12 layui-col-sm8 layui-col-md7">
@@ -82,9 +79,6 @@
               </div>
             </div>
           </template>
-
-
-
         </div>
 
 
@@ -120,17 +114,18 @@
     var uivm = new Vue({
       el:'#vm',
       data:{
-        userid: '',
+        bloggerid:'',
         blogger:'',
-        userArticleList: '',
+        loginUser:'',
+        userArticleList: ''
       },
       mounted:function(){
-        this.userid = getUrlParam("userid");
+        this.bloggerid = getUrlParam("bloggerid");
         axios({
           method: "POST",
           url: "http://localhost:8080/blog/servlet/UserServlet?method=goUserSpace",
           data: {
-            userid: this.userid
+            bloggerid: this.bloggerid
           },
           transformRequest: [function(data) {
             // Do whatever you want to transform the data

@@ -31,7 +31,7 @@
         <a href="user/about.html">关于</a>
       </div>
       <p class="welcome-text">
-        欢迎来到<span class="name">小明</span>的博客~
+        欢迎来到<span class="name" style="color:red;font-size: 40px">小明</span>的博客~
       </p>
     </div>
 
@@ -54,15 +54,20 @@
                   </div>
                 </div>
                 <div class="form">
-                  <form class="layui-form" action="">
+                  <form class="layui-form" action="servlet/HomeServlet?method=addComment" method="post" @submit="check">
+                      <template v-if="loginUser">
+                          <input type="hidden" name="userid" :value="loginUser.userid">
+                          <input type="hidden" name="articleid" :value="articleid">
+                          <input type="hidden" name="where" value="1">
+                      </template>
                     <div class="layui-form-item layui-form-text">
                       <div class="layui-input-block">
-                        <textarea name="desc" placeholder="既然来了，就说几句" class="layui-textarea"></textarea>
+                        <textarea name="commentcontent" placeholder="既然来了，就说几句" class="layui-textarea"></textarea>
                       </div>
                     </div>
                     <div class="layui-form-item">
                       <div class="layui-input-block" style="text-align: right;">
-                        <button class="layui-btn definite">確定</button>
+                        <button type="submit" class="layui-btn definite">確定</button>
                       </div>
                     </div>
                   </form>
@@ -81,7 +86,7 @@
                       <img src="static/img/header.png" alt="">
                     </div>
                     <div class="text">
-                      <p class="tit"><span class="name">{{uc.username}}</span><span class="data">{{uc.commenttime}}</span></p>
+                      <p class="tit"><span class="name">{{uc.username}}</span><span class="data">{{dateFormat(uc.commenttime)}}</span></p>
                       <p class="ct">{{uc.commentcontent}}</p>
                     </div>
                   </div>
@@ -125,13 +130,39 @@
     var uivm = new Vue({
       el:'#vm',
       data:{
-        userid: '',
-        articleid:'',
-        loginUser: '',
-        article: '',
-        articleUser: '',
-        ucSet: '',
+            userid: '',
+            articleid:'',
+            loginUser: '',
+            article: '',
+            articleUser: '',
+            ucSet: '',
+            isLogin: ''
       },
+        methods:{
+            check:function (e) {
+                // 进行验证 验证通过就返回 true
+                if(this.isLogin === 0){
+                    alert("请先登录再评论")
+                    e.preventDefault();
+                };
+                return true;
+            },
+            //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
+            dateFormat:function(time) {
+                var date=new Date(time);
+                var year=date.getFullYear();
+                /* 在日期格式中，月份是从0开始的，因此要加0
+                 * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+                 * */
+                var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+                var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+                var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+                var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+                var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+                // 拼接
+                return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+            }
+        },
       mounted:function(){
         this.articleid = getUrlParam("articleid");
         axios({
@@ -154,12 +185,13 @@
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         }).then(response => {
-          var data = response.data
-          this.article = data.detail.article
-          this.loginUser = data.detail.loginUser
-          this.articleUser = data.detail.articleUser
-          this.ucSet = data.detail.ucSet
-          console.log(data)
+              var data = response.data
+              this.article = data.detail.article
+              this.loginUser = data.detail.loginUser
+              this.articleUser = data.detail.articleUser
+              this.ucSet = data.detail.ucSet
+              this.isLogin = data.detail.isLogin
+              console.log(data)
         }).catch(error => console.log(error))
       }
     })

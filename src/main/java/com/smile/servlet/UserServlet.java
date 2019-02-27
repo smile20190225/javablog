@@ -204,8 +204,6 @@ public class UserServlet extends BaseServlet {
         int love = Integer.parseInt(lv);
         WhisperService whisperService = new WhisperService();
         whisperService.addLove(whisperid,love);
-
-
     }
 
 }

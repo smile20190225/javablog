@@ -5,6 +5,7 @@ import com.smile.bean.*;
 import com.smile.service.*;
 import com.smile.utils.BaseServlet;
 import com.smile.utils.ToolUtils;
+import com.smile.utils.ValidateCode;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.ProgressListener;
@@ -28,14 +29,61 @@ public class HomeServlet extends BaseServlet {
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String registertime = sdf.format(new Date());
         User user = new User(username, password, email, registertime);
         UserSevice userSevice = new UserSevice();
         int insert = userSevice.register(user);
-        try{
-            response.getWriter().println(insert);
+        switch (insert){
+            case 0:
+                message.setMessage("用户已存在");
+                message.setCode(0);
+                break;
+            case 1:
+                message.setMessage("注册成功");
+                message.setCode(1);
+                break;
+            case -1:
+                message.setMessage("服务器出现一丢丢问题~");
+                message.setCode(-1);
+                break;
+            default:
+                    break;
+        }
+        UserServlet.responseMessage(request,response,message);
+        /*try{
+            response.getWriter().println(JSONObject.toJSONString(message));
         }catch (Exception e) {
+            e.printStackTrace();
+        }*/
+    }
+
+    public void checkCode(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("lalalalala");
+        String submitCode = request.getParameter("captcha");
+        String code = (String)request.getSession().getAttribute("code");
+        try {
+            if(submitCode.equalsIgnoreCase(code))response.getWriter().println(true);
+            else response.getWriter().println(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendCode(HttpServletRequest request, HttpServletResponse response){
+        HttpSession session = request.getSession();
+        response.setContentType("image/png");// 设置响应的类型格式为图片格式
+        //禁止图像缓存。
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+ //System.out.println("哈哈哈哈哈哈哈哈哈");
+        ValidateCode vCode = new ValidateCode();
+        vCode.createValidateCode();
+        session.setAttribute("code", vCode.getCode());
+        try {
+            vCode.write(response.getOutputStream());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -48,18 +96,15 @@ public class HomeServlet extends BaseServlet {
         int code = userSevice.login(username,password);
         System.out.println("dhagha");
         switch (code){
-            case -2:
-                message.setMessage("登录失败！");
+            case 0:
+                message.setMessage("用户不存在！");
                 break;
             case -1:
                 message.setMessage("密码输入错误！");
                 break;
-            case 0:
-                message.setMessage("用户不存在！");
-                break;
             case 1:
                 message.setMessage("登录成功");
-                User user = userSevice.findUser(username,password);
+                User user = userSevice.findUserByName(username);
                 HttpSession session = request.getSession();
                 session.setAttribute("user",user);
         }

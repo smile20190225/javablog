@@ -3,7 +3,7 @@
 <head>
     <base href="http://localhost:8080/blog/">
     <link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Single Post</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
@@ -84,7 +84,7 @@
                             <div class="body">
                                 <h1>{{article.title}}</h1>
                                 <div class="meta">
-                                    <i class="fa fa-user"></i> <a :href="'user/index.html?userid='+articleUser.userid">{{articleUser.username}}</a>
+                                    <i class="fa fa-user"></i> <a :href="'user/index.html?bloggerid='+articleUser.userid">{{articleUser.username}}</a>
                                     <i class="fa fa-calendar"></i>{{article.publictime}}
                                     <i class="fa fa-comments"></i>
                                     <span class="data">
@@ -110,7 +110,7 @@
                                         <img src="static/img/avatar.png" alt="A Smart Guy" class="avatar">
                                         <div class="meta">
                                             <h3><a href="#">{{uc.username}}</a></h3>
-                                            <span class="date">{{uc.commenttime}}
+                                            <span class="date">{{dateFormat(uc.commenttime)}}
                                     </span>
                                             <span class="separator">
                                         -
@@ -123,13 +123,13 @@
                                     </div>
                                 </article>
 
-                                <template v-if="isLogin === 0">
+                                <template v-if="uc.replyid">
                                     <article class="comment reply">
                                         <header class="clearfix">
                                             <img src="static/img/avatar.png" alt="A Smart Guy" class="avatar">
                                             <div class="meta">
                                                 <h3><a href="#">{{uc.realname}}</a></h3>
-                                                <span class="date">{{uc.replytime}}
+                                                <span class="date">{{dateFormat(uc.replytime)}}
                                                 </span>
                                                 </div>
                                         </header>
@@ -146,15 +146,16 @@
 
                             <h2><i class="fa fa-pencil"></i>我想说两句</h2>
 
-                            <form action="#" method="get" accept-charset="utf-8">
-
-
-                                <input type="url" name="name" id="comment-url" placeholder="Website" class="form-control input-lg">
-
-                                <textarea rows="4" name="message" id="comment-body" placeholder="Your Message" class="form-control input-lg"></textarea>
-
+                            <form action="servlet/HomeServlet?method=addComment" @submit="check" method="post">
+                                <!--<input type="url" name="name" id="comment-url" placeholder="Website" class="form-control input-lg">-->
+                                <template v-if="loginUser">
+                                    <input type="hidden" name="userid" :value="loginUser.userid">
+                                    <input type="hidden" name="articleid" :value="article.articleid">
+                                    <input type="hidden" name="where" value="0">
+                                </template>
+                                <textarea rows="4" name="commentcontent" id="comment-body" placeholder="Your Message" class="form-control input-lg"></textarea>
                                 <div class="buttons clearfix">
-                                    <button type="submit" class="btn btn-xlarge btn-clean-one">Submit</button>
+                                    <button type="submit" class="btn btn-xlarge btn-clean-one" >提交评论</button>
                                 </div>
                             </form>
                         </aside>
@@ -168,7 +169,7 @@
                             <div class="body">
                                 <ul class="clean-list">
                                     <template v-for="(article,index) in hotSet" v-if="index<=6">
-                                        <li><a href="">{{article.title}}</a></li>
+                                        <li><a :href="'home/single.html?articleid='+article.articleid">{{article.title}}</a></li>
                                     </template>
                                 </ul>
                             </div>
@@ -262,13 +263,39 @@
         var singlevm = new Vue({
             el:'#singlevm',
             data:{
-                user:'',
+                isSubmit:false,
+                loginUser:'',
                 article:'',
-                aritleUser:'',
+                articleUser:'',
                 articleid: '',
                 hotSet: '',
                 newSet: '',
-                ucSet: ''
+                ucSet: '',
+                isLogin:''
+            },
+            methods:{
+                check:function (e) {
+                    // 进行验证 验证通过就返回 true
+                    if(this.isLogin === 0){
+                        alert("请先登录再评论")
+                        e.preventDefault();
+                    };
+                    return true;
+                },
+                dateFormat:function(time) {
+                    var date=new Date(time);
+                    var year=date.getFullYear();
+                    /* 在日期格式中，月份是从0开始的，因此要加0
+                     * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+                     * */
+                    var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+                    var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+                    var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+                    var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+                    var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+                    // 拼接
+                    return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+                }
             },
             beforeMount:function(){
                 this.articleid = getUrlParam("articleid");
@@ -276,7 +303,7 @@
                         method: "POST",
                         url: "http://localhost:8080/blog/servlet/HomeServlet?method=goSingle",
                         data: {
-                            articleid: this.articleid
+                            articleid: this.articleid,
                         },
                         transformRequest: [function(data) {
                             // Do whatever you want to transform the data
@@ -293,14 +320,17 @@
                     }).then(response => {
                         var data = response.data
                         this.article = data.detail.article
+                        this.loginUser = data.detail.loginUser
                         this.articleUser = data.detail.articleUser
-                        this.newSet = data.detail.newSet;
-                        this.hotSet = data.detail.hotSet;
-                        this.ucSet = data.detail.ucSet;
-                        console.log(response.data);
+                        this.newSet = data.detail.newSet
+                        this.hotSet = data.detail.hotSet
+                        this.ucSet = data.detail.ucSet
+                        this.isLogin = data.detail.isLogin
+                        console.log(response.data)
                 }).catch(error => console.log(error))
             }
         })
+
 
     </script>
 </body>

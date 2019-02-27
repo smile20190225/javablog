@@ -6,6 +6,7 @@ import com.smile.utils.DBUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,33 +26,15 @@ public class UserDao {
             return insert;
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
     }
 
-    public int login(String username, String password){
-        String hasSql = "select * from user where username = ?";
-        try {
-            List<User> userList = runner.query(hasSql,new BeanListHandler<User>(User.class),username);
-            if(userList.isEmpty()){
-                return -1;
-            }
-            if(findUser(username,password)==null){
-                return 0;
-            }else{
-                return 1;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -2;
-        }
-    }
-
-    public User findUser(String username, String password){
-        String sql = "select * from user where username = ? and password = ?";
+    public User findUserByName(String username){
+        String sql = "select * from user where username = ?";
         User user = null;
         try {
-            List<User> userList = runner.query(sql,new BeanListHandler<User>(User.class),username,password);
+            List<User> userList = runner.query(sql,new BeanListHandler<User>(User.class),username);
             if(!userList.isEmpty())user = userList.get(0);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -80,5 +63,17 @@ public class UserDao {
             e.printStackTrace();
         }
         return user;
+    }
+
+    public boolean hasUser(String username) {
+        String sql = "select * from user where username = ?";
+        List userList = new ArrayList();
+        try {
+            userList = runner.query(sql,new MapListHandler(),username);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(!userList.isEmpty())return true;
+        else return false;
     }
 }

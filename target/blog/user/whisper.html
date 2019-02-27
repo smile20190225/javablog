@@ -1,254 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
-  <base href="http://localhost:8080/blog/"><link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
+  <base href="http://localhost:8080/blog/">
+  <link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <title>Document</title>
+  <title>来一句微语吧</title>
   <link rel="stylesheet" type="text/css" href="static/layui/css/layui.css">
   <link rel="stylesheet" type="text/css" href="static/css/main.css">
-<!--加载meta IE兼容文件-->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-<![endif]-->
+
 </head>
 <body>
-  <div class="header">
-    <div class="menu-btn">
-      <div class="menu"></div>
-    </div>
-    <h1 class="logo">
-      <a href="user/index.html">
-        <span>MYBLOG</span>
-        <img src="static/img/logo.png">
-      </a>
-    </h1>
-    <div class="nav">
-      <a href="user/index.html">文章</a>
-      <a href="user/whisper.html" class="active">微语</a>
-      <a href="user/leacots.html">留言</a>
-      <a href="user/album.html">相册</a>
-      <a href="user/about.html">关于</a>
-    </div>
-    <p class="welcome-text">
-      欢迎来到<span class="name">小明</span>的博客~
-    </p>
-  </div>
+
+    <div id="vm">
+      <div class="header">
+        <div class="menu-btn">
+          <div class="menu"></div>
+        </div>
+        <h1 class="logo">
+          <a href="user/index.html">
+            <span>BLOG</span>
+            <img src="static/img/logo.png">
+          </a>
+        </h1>
+        <div class="nav">
+          <a href="user/index.html">文章</a>
+          <a href="user/whisper.html" class="active">微语</a>
+          <a href="user/leacots.html">留言</a>
+          <a href="user/album.html">相册</a>
+          <a href="user/about.html">关于</a>
+        </div>
+        <p class="welcome-text">
+          <a href="user/whisperWrite.html" v-on:click="check"><span class="name" style="color: red; font-size: 25px">··我也微语一句··</span></a>
+        </p>
+      </div>
+      <div class="content whisper-content">
+        <div class="cont">
+          <div class="whisper-list">
 
 
-  <div class="content whisper-content">
-    <div class="cont">
-      <div class="whisper-list">
-        <div class="item-box">
-          <div class="item">
-            <div class="whisper-title">
-              <i class="layui-icon layui-icon-date"></i><span class="hour">12:25</span><span class="date">2018/06/08</span>
-            </div>
-            <p class="text-cont">
-              一直听说牛油果吃起来像肥皂、肥肉，虽然很难吃，但是价格却很贵，我还是想尝试一下。今天公司新到了新西兰牛油果，这是新西兰牛油果是第一次在中国上市，个头比普通牛油果大了一倍，被誉为“超牛果”。好奇心驱使我尝了一颗，第一次吃牛油果没有见识，切开牛油果费了好大劲，切成了这样。
-            </p>
-            <div class="img-box">
-              <img src="static/img/wy_img1.jpg">
-            </div>
-            <div class="op-list">
-              <p class="like"><i class="layui-icon layui-icon-praise"></i><span>1200</span></p> 
-              <p class="edit"><i class="layui-icon layui-icon-reply-fill"></i><span>1200</span></p>
-              <p class="off"><span>展开</span><i class="layui-icon layui-icon-down"></i></p>
-            </div>
-          </div>
-          <div class="review-version layui-hide">
-              <div class="form">
-                <img src="static/img/header2.png">
-                <form class="layui-form" action="">
-                  <div class="layui-form-item layui-form-text">
-                    <div class="layui-input-block">
-                      <textarea name="desc" class="layui-textarea"></textarea>
-                    </div>
+
+            <template v-for="whisper in whisperSet">
+              <div class="item-box">
+                <div class="item">
+                  <div class="whisper-title">
+                    <i class="layui-icon layui-icon-date">
+                    </i><span class="hour">{{whisper.whispertime}}</span>
+                    <!--<span class="date">2018/06/08</span>-->
                   </div>
-                  <div class="layui-form-item">
-                    <div class="layui-input-block" style="text-align: right;">
-                      <button class="layui-btn definite">確定</button>
-                    </div>
+                  <p class="text-cont">
+                    {{whisper.whispercontent}}
+                  </p>
+                  <div class="img-box">
+
+                    <template v-for="image in subPath(whisper.picturepath)">
+                      <img :src="image" width="210" height="138">
+                    </template>
+
                   </div>
-                </form>
+                  <div class="op-list">
+                    <p class="like">
+                      <i class="layui-icon layui-icon-praise" @click="sendLove(whisper.whisperid, whisper.love)"></i>
+                      <span>{{whisper.love}}</span>
+                    </p>
+                    <p class="edit"><i class="layui-icon layui-icon-reply-fill"></i><span>{{whisper.commentcount}}</span></p>
+                    <p class="off">
+                      <template>
+                        <span><a v-on:click="open(whisper.whisperid)">展开</a></span>
+                      </template>
+                      <input type="hidden" name="whisperid" :value="whisper.whisperid"/>
+                      <i class="layui-icon layui-icon-down"></i>
+                    </p>
+                  </div>
+                </div>
+
+
+                <div class="review-version layui-hide" :id="whisper.whisperid">
+                  <div class="form">
+                    <img src="static/img/header2.png">
+                    <form class="layui-form" action="/blog/servlet/UserServlet?method=addWhisperComment" method="post">
+                      <input type="hidden" name="whisperid" :value="whisper.whisperid">
+                      <div class="layui-form-item layui-form-text">
+                        <div class="layui-input-block">
+                          <textarea name="whispercomment" class="layui-textarea"></textarea>
+                        </div>
+                      </div>
+                      <div class="layui-form-item">
+                        <div class="layui-input-block" style="text-align: right;">
+                          <input type="submit" v-on:click="check" value="确定" class="layui-btn">
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+
               </div>
-              <div class="list-cont">
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-              </div>
+            </template>
+
           </div>
         </div>
-        <div class="item-box">
-          <div class="item">
-            <div class="whisper-title">
-              <i class="layui-icon layui-icon-date"></i><span class="hour">12:25</span><span class="date">2018/06/08</span>
-            </div>
-            <p class="text-cont">
-              一直听说牛油果吃起来像肥皂、肥肉，虽然很难吃，但是价格却很贵，我还是想尝试一下。今天公司新到了新西兰牛油果，这是新西兰牛油果是第一次在中国上市，个头比普通牛油果大了一倍，被誉为“超牛果”。好奇心驱使我尝了一颗，第一次吃牛油果没有见识，切开牛油果费了好大劲，切成了这样。
-            </p>
-            <div class="img-box">
-              <img src="static/img/wy_img2.jpg">
-              <img src="static/img/wy_img3.jpg">
-              <img src="static/img/wy_img4.jpg">
-            </div>
-            <div class="op-list">
-              <p class="like"><i class="layui-icon layui-icon-praise"></i><span>1200</span></p> 
-              <p class="edit"><i class="layui-icon layui-icon-reply-fill"></i><span>1200</span></p>
-              <p class="off"><span>展开</span><i class="layui-icon layui-icon-down"></i></p>
-            </div>
-          </div>
-          <div class="review-version layui-hide">
-              <div class="form">
-                <img src="static/img/header2.png">
-                <form class="layui-form" action="">
-                  <div class="layui-form-item layui-form-text">
-                    <div class="layui-input-block">
-                      <textarea name="desc" class="layui-textarea"></textarea>
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <div class="layui-input-block" style="text-align: right;">
-                      <button class="layui-btn definite">確定</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div class="list-cont">
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="item-box">
-          <div class="item">
-            <div class="whisper-title">
-              <i class="layui-icon layui-icon-date"></i><span class="hour">12:25</span><span class="date">2018/06/08</span>
-            </div>
-            <p class="text-cont">
-              一直听说牛油果吃起来像肥皂、肥肉，虽然很难吃，但是价格却很贵，我还是想尝试一下。今天公司新到了新西兰牛油果，这是新西兰牛油果是第一次在中国上市，个头比普通牛油果大了一倍，被誉为“超牛果”。好奇心驱使我尝了一颗，第一次吃牛油果没有见识，切开牛油果费了好大劲，切成了这样。
-            </p>
-            <div class="img-box">
-              <img src="static/img/wy_img5.jpg">
-            </div>
-            <div class="op-list">
-              <p class="like"><i class="layui-icon layui-icon-praise"></i><span>1200</span></p> 
-              <p class="edit"><i class="layui-icon layui-icon-reply-fill"></i><span>1200</span></p>
-              <p class="off" off = 'true'><span>收起</span><i class="layui-icon layui-icon-up"></i></p>
-            </div>
-          </div>
-          <div class="review-version">
-              <div class="form">
-                <img src="static/img/header2.png">
-                <form class="layui-form" action="">
-                  <div class="layui-form-item layui-form-text">
-                    <div class="layui-input-block">
-                      <textarea name="desc" class="layui-textarea"></textarea>
-                    </div>
-                  </div>
-                  <div class="layui-form-item">
-                    <div class="layui-input-block" style="text-align: right;">
-                      <button class="layui-btn definite">確定</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div class="list-cont">
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-                <div class="cont">
-                  <div class="img">
-                    <img src="static/img/header.png" alt="">
-                  </div>
-                  <div class="text">
-                    <p class="tit"><span class="name">吳亦凡</span><span class="data">2018/06/06</span></p>
-                    <p class="ct">敢问大师，师从何方？上古高人呐逐一地看完你的作品后，我的心久久 不能平静！这世间怎么可能还有如此精辟的作品？我不敢相信自己的眼睛。自从改革开放以后，我就以为再也不会有任何作品能打动我，没想到今天看到这个如此精妙绝伦的作品好厉害！</p>
-                  </div>
-                </div>
-              </div>
-          </div>
-        </div>
-      </div>
-      <div id="demo" style="text-align: center;"></div>
-    </div>
-  </div>
-  <script type="text/html" id="laytplCont">
-    <div class="cont">
-      <div class="img">
-        <img src="{{d.avatar}}" alt="">
-      </div>
-      <div class="text">
-        <p class="tit"><span class="name">{{d.name}}</span><span class="data">2018/06/06</span></p>
-        <p class="ct">{{d.cont}}</p>
       </div>
     </div>
-  </script>
+
+
   <div class="footer-wrap">
     <div class="footer w1000">
       <div class="qrcode">
@@ -266,19 +121,184 @@
     </div>
   </div>
   <script type="text/javascript" src="static/layui/layui.js"></script>
+    <script type="text/javascript" src="static/js/jquery.min.js"></script>
+  <script type="text/javascript" src="static/js/vue.js"></script>
+  <script type="text/javascript" src="static/js/axios.min.js"></script>
+  <script type="text/javascript" src="static/js/public.js"></script><script type="text/javascript">
+      layui.config({
+        base: 'static/js/util/'
+      }).use(['element','laypage','form','menu'],function(){
+        element = layui.element,laypage = layui.laypage,form = layui.form,menu = layui.menu;
+        laypage.render({
+          elem: 'demo'
+          ,count: 70 //数据总数，从服务端得到
+        });
+        menu.init();
+        menu.off();
+        menu.submit()
+      })
+    </script>
   <script type="text/javascript">
-   layui.config({
-      base: 'static/js/util/'
-    }).use(['element','laypage','form','menu'],function(){
-      element = layui.element,laypage = layui.laypage,form = layui.form,menu = layui.menu;
-      laypage.render({
-        elem: 'demo'
-        ,count: 70 //数据总数，从服务端得到
-      });
-      menu.init();
-      menu.off();
-      menu.submit()
+    var vm = new Vue({
+      el:'#vm',
+      data:{
+        loveflag:'0',
+        flag:'0',
+        whisperSet: '',
+        whisperCommentSet:'',
+        loginUser: '',
+        isLogin: ''
+      },
+      methods:{
+        check:function (e) {
+          // 进行验证 验证通过就返回 true
+          if(this.isLogin === 0){
+            alert("请先登录再评论")
+            e.preventDefault();
+          };
+          return true;
+        },
+        //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
+        dateFormat:function(time) {
+          var date=new Date(time);
+          var year=date.getFullYear();
+          /* 在日期格式中，月份是从0开始的，因此要加0
+           * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+           * */
+          var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+          var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+          var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+          var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+          var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+          // 拼接
+          return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+        },
+        open:function (e) {
+          var whisperid = e;
+          axios({
+            method: "POST",
+            url: "http://localhost:8080/blog/servlet/UserServlet?method=getWhisperComment",
+            data: {
+              whisperid:whisperid
+            },
+            transformRequest: [function(data) {
+              // Do whatever you want to transform the data
+              let ret = ''
+              for(let it in data) {
+                // 如果要发送中文 编码
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+              }
+              return ret
+            }],
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(response => {
+            var data = response.data;
+            console.log(data);
+            var ws = data.detail.whisperCommentSet
+
+            $.each(ws,function(key,value){
+              console.log(key);
+              console.log(value.commentid);
+              value.commenttime = dateFormat(value.commenttime);
+              var content = "";
+              content += "<div class='list-cont'>";
+              content += "<div class='cont'>";
+              content += "<div class='img'>";
+              content += "<img src='"+value.image+"' width='50'>";
+              content += "<span style='margin-left: 25px;color: red'>"+value.username+"</span>";
+              content += "</div>";
+              content += "<div class='text'>";
+              content += "<p class='tit'><span class='name'></span><span class='data'>"+value.commenttime+"</span></p>";
+              content += "<p class='ct'>"+value.commentcontent+"</p>";
+              content += "</div></div></div>";
+              var dom = "#"+value.whisperid;
+              $(dom).append(content);
+            });
+
+            function dateFormat(time) {
+              var date=new Date(time);
+              var year=date.getFullYear();
+              /* 在日期格式中，月份是从0开始的，因此要加0
+               * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+               * */
+              var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+              var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+              var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+              var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+              var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+              // 拼接
+              return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+            }
+
+        }).catch(error => console.log(error))
+        },
+        subPath:function(path){
+          //alert("dhagh");
+          var array = path.split("*");
+          console.log(array);
+          return array;
+        },
+        sendLove:function (whisperid,love) {
+          if(this.loveflag == 0){
+            love = love + 1;
+          }else{
+            love = love - 1;
+          }
+          axios({
+            method: "POST",
+            url: "http://localhost:8080/blog/servlet/UserServlet?method=addLove",
+            data: {
+              whisperid:whisperid,
+              love:love
+            },
+            transformRequest: [function(data) {
+              // Do whatever you want to transform the data
+              let ret = ''
+              for(let it in data) {
+                // 如果要发送中文 编码
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+              }
+              return ret
+            }],
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(response => {
+            var data = response.data
+          }).catch(error => console.log(error))
+
+        }
+      },
+      mounted:function(){
+        axios({
+          method: "POST",
+          url: "http://localhost:8080/blog/servlet/UserServlet?method=goWhisper",
+          data: {
+          },
+          transformRequest: [function(data) {
+            // Do whatever you want to transform the data
+            let ret = ''
+            for(let it in data) {
+              // 如果要发送中文 编码
+              ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+            }
+            return ret
+          }],
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(response => {
+          var data = response.data
+          this.loginUser = data.detail.loginUser
+          this.whisperSet = data.detail.whisperSet
+          this.isLogin = data.detail.isLogin
+          console.log(data)
+        }).catch(error => console.log(error))
+      }
     })
+
   </script>
 </body>
 </html>

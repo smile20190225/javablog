@@ -17,6 +17,7 @@ public class User {
     String usertype;
     String userstate;
     String registertime;
+    String salt;
 
     public User() {
     }
@@ -154,5 +155,13 @@ public class User {
 
     public void setRegistertime(String registertime) {
         this.registertime = registertime;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

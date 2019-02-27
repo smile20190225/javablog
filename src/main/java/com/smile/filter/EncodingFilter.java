@@ -11,7 +11,7 @@ public class EncodingFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
-        System.out.println("ddd");
+        //System.out.println("ddd");
         req.setCharacterEncoding("UTF-8");
         chain.doFilter(req, resp);
     }

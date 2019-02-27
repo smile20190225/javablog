@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="static/css/style.css" id="theme-styles">
 </head>
 <body>
+
     <div id="vm">
 
         <header>
@@ -40,7 +41,7 @@
                                 </template>
                                 <template v-else>
                                     <li>
-                                        <a href="user/index.html" style="color:red;font-size:30px">{{user.username}}</a>
+                                        <a :href="'user/index.html?bloggerid='+user.userid" style="color:red;font-size:30px">{{user.username}}</a>
                                     </li>
                                 </template>
                                 <li>
@@ -89,17 +90,17 @@
                                 <div style="height:656px" class="col-md-6 col-sm-6">
                                     <article class=" blog-teaser">
                                         <header>
-                                            <!--<img src="static/img/1.jpg" alt="">-->
-                                            <!--D:\IDEAworkspace\blog\target\blog\upload\2\13\c77d4e2c-c50b-4e3e-82b8-6fa6bfc56993_4.jpg-->
-                                           <!-- D:\IDEAworkspace\blog\target\blog\WEB-INF\upload\5\14\e54b9d44-4ae1-4dab-9d8e-98bf6378d799_4.jpg-->
-                                            <img src="WEB-INF\upload\e54b9d44-4ae1-4dab-9d8e-98bf6378d799_4.jpg" alt="">
+                                            <img :src="article.contentimage" alt="">
                                             <h3><a href="home/single.html">{{article.title}}</a></h3>
                                             <span class="meta">{{article.publictime}}</span>
                                             <hr>
                                         </header>
+
                                         <div class="body">
-                                            {{article.content.substr(0,120)}}
+                                            {{subArticle(article.content)}}
                                         </div>
+
+
                                         <div class="clearfix">
                                             <a :href="'home/single.html?articleid='+article.articleid" class="btn btn-clean-one">Read more</a>
                                         </div>
@@ -115,6 +116,7 @@
                         <div class="paging">
                             <a href="#" class="older">Older Post</i></a>
                         </div>
+
                     </div>
                     <aside class="col-md-4 blog-aside">
 
@@ -125,7 +127,7 @@
                             <div class="body">
                                 <ul class="clean-list">
                                     <template v-for="(article,index) in hotSet" v-if="index<=6">
-                                        <li><a href="">{{article.title}}</a></li>
+                                        <li><a :href="'home/single.html?articleid='+article.articleid">{{article.title}}</a></li>
                                     </template>
                                 </ul>
                             </div>
@@ -226,6 +228,12 @@
             articleList:'',
             newSet:'',
             hotSet:''
+        },
+        methods:{
+          subArticle:function (str) {
+              if(str.length <= 120)return str;
+              else return str.substr(0,120);
+          }
         },
         beforeMount:function(){
                 axios({
