@@ -667,6 +667,29 @@ public class HomeServlet extends BaseServlet {
          }
      }
 
+     public void dbBackup(HttpServletRequest request, HttpServletResponse response){
+        String savePath = request.getServletContext().getRealPath("DatabaseBackup");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_hh-MM-ss");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd hh:MM:ss");
+        Date backupDate = new Date();
+        String backupTime = sdf.format(backupDate);
+        String filename = backupTime+".sql";
+        if(Bup_RecTool.backup(savePath,filename)){
+            ToolService toolService = new ToolService();
+            String backupTime2 = sdf2.format(backupDate);
+            String url = savePath + File.separator + filename;
+            toolService.addBackup(backupTime2,filename,url);
+        }else{
+            System.out.println("数据库备份失败！");
+        }
+     }
+
+    public void dbRecover(HttpServletRequest request, HttpServletResponse response){
+        String filePath = "D:\\IDEAworkspace\\blog\\src\\main\\webapp\\DatabaseBackup\\2019_03_04_03-03-57.sql";
+        File file = new File(filePath);
+        if(file.exists()) System.out.println("file exits");
+        Bup_RecTool.recover(filePath);
+    }
 
 }
 
