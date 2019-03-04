@@ -3,14 +3,13 @@ package com.smile.servlet;
 import com.alibaba.fastjson.JSONObject;
 import com.smile.bean.*;
 import com.smile.service.*;
-import com.smile.utils.BaseServlet;
-import com.smile.utils.ToolUtils;
-import com.smile.utils.ValidateCode;
+import com.smile.utils.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.ProgressListener;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -505,6 +504,99 @@ public class HomeServlet extends BaseServlet {
             e.printStackTrace();
         }
 
+    }
+
+    public void retrievePassword(HttpServletRequest request, HttpServletResponse response){
+        HttpSession session = request.getSession();
+        Message message = new Message();
+        String email = request.getParameter("email");
+        UserSevice userSevice = new UserSevice();
+        if(!userSevice.checkEmail(email)){
+            message.setMessage("您好，该邮箱未注册，请重新输入邮箱地址~");
+            message.setCode(0);
+            UserServlet.responseMessage(request,response,message);
+        }else{
+            Random r = new Random();
+            int c = r.nextInt(100000)+1000;
+            String code = String.valueOf(c);
+            User cpUser = userSevice.findUserByEmail(email);//修改密码的人
+            int flag = MailUtil.sendEmail(email,code,cpUser.getUserid());
+            switch (flag){
+                case 1:
+                    session.setAttribute("cpUser",cpUser);
+                    session.setAttribute("cpCode",code);
+                    message.setCode(1);
+                    message.setMessage("邮件发送成功！请您前往邮箱修改密码~");
+                    break;
+                case -1:
+                    message.setCode(-1);
+                    message.setMessage("邮件发送失败，可能是网络问题~");
+                    break;
+                case -2:
+                    message.setCode(1);
+                    message.setMessage("邮件发送失败！这边编码有点问题~");
+                    break;
+            }
+            UserServlet.responseMessage(request,response,message);
+        }
+
+    }
+
+    public void changePassword(HttpServletRequest request, HttpServletResponse response){
+        Message message = new Message();
+        HttpSession session = request.getSession();
+
+
+        String submitCode = request.getParameter("code");
+        String password = request.getParameter("password");
+        String uid = request.getParameter("userid");
+        int userid = Integer.parseInt(uid);
+
+
+        User cpUser = (User)session.getAttribute("cpUser");
+        int cpUserId = cpUser.getUserid();
+        String cpCode = (String)session.getAttribute("cpCode");
+
+        if(cpUserId != userid || !cpCode.equals(submitCode)){
+            message.setCode(0);
+            message.setMessage("不好意思，您没有权限！！！");
+            UserServlet.responseMessage(request,response,message);
+        }else{
+            UserSevice userSevice = new UserSevice();
+            int flag = userSevice.changePassword(cpUser,password);
+            if(flag == 0){
+                message.setCode(-1);
+                message.setMessage("修改密码出现问题！");
+            }else{
+                message.setCode(1);
+                message.setMessage("恭喜！！！密码修改成功");
+            }
+            UserServlet.responseMessage(request,response,message);
+        }
+    }
+
+    public void exportUserWorkbook(HttpServletRequest request, HttpServletResponse response){
+        UserSevice userSevice = new UserSevice();
+        HSSFWorkbook workbook = userSevice.createUserExcel();
+
+        //得到Excel表的保存目录
+        String excelPath = this.getServletContext().getRealPath("/static/excel");
+        File excelFile = new File(excelPath);
+        if (!excelFile.exists()) {
+            //创建临时目录
+            excelFile.mkdir();
+        }
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(excelPath+"/user.xls");
+            workbook.write(out);
+            System.out.println("UserSheet builds success !");
+            if(out != null)out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
 

@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+    <base href="http://localhost:8080/blog/">
+    <link rel="icon" href="static/img/wy_img2.jpg" type="image/x-icon"/>
+    <title>找回密码</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="" />
+    <link href="static/css/login.css" rel='stylesheet' type='text/css'/>
+</head>
+<body>
+<h1><a href="home/index.html">Smile</a></h1>
+
+<div class="log">
+    <div class="content2">
+        <h2>Forgot Password</h2>
+        <form id="commentForm" action="/blog/servlet/HomeServlet?method=retrievePassword" method="post">
+            <input type="email" id="email" name="email" placeholder="请输入您注册时的电子邮件，以便找回您的密码" v-model="email">
+            <p></p>
+            <div class="button-row">
+                <input type="submit" class="sign-in" value="发送邮件">
+                <input type="reset" class="reset" value="重置">
+            </div>
+        </form>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="footer">
+    <p><a target="_blank" href="home/index.html">201641404232 201641404219</a></p>
+</div>
+<script src="static/js/jquery.min.js" type="text/javascript"></script>
+<script src="static/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="static/js/messages_zh.min.js" type="text/javascript"></script>
+
+<script>
+    $.validator.setDefaults({
+        submitHandler: function() {
+            var email = $("#email").val();
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: 'servlet/HomeServlet?method=retrievePassword',
+                data: {
+                    email:email
+                },
+                success: function (data) {
+                    alert(data.message);
+                    if(data.code == 1){
+                        window.location.href="home/index.html";
+                    }
+                },
+                error: function() {
+                    alert("未能连接到服务器!");
+                }
+            });
+            //form.submit();
+        }
+    });
+    $(document).ready(function() {
+// 在键盘按下并释放及提交后验证提交表单
+        $("#commentForm").validate({
+            errorPlacement: function(error, element) {
+                error.appendTo(element.next());
+            },
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                }
+            },
+            messages: {
+                email: "请输入一个正确的邮箱"
+            }
+        });
+    });
+</script>
+<style>
+    .error{
+        color:red;
+    }
+</style>
+
+</body>
+</html>

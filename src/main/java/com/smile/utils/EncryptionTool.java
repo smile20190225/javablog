@@ -23,7 +23,7 @@ public class EncryptionTool {
     }
 
     //将客户输入的密码加盐后加密
-    public static void  encryptPasswd(User user){
+    public static int  encryptPasswd(User user){
         String salt="";
         Random rand = new Random();
         //可选的字符
@@ -48,8 +48,10 @@ public class EncryptionTool {
             //new String(lastPassword)  根据byte数组创建一个字符串
             user.setPassword(new String(lastPassword));
             user.setSalt(salt);
+            return 1;
         }catch(Exception ex){
             ex.printStackTrace();
+            return 0;
         }
     }
 

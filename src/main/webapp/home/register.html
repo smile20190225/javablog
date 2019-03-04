@@ -58,7 +58,7 @@ $.validator.setDefaults({
 				captcha:captcha
 			},
 			success: function (data) {
-				alert("注册不成功!"+data.message+" 请重新输入注册码");
+				alert(data.message);
 				if(data.code == 1){
 					window.location.href="home/index.html";
 				}
