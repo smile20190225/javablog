@@ -1,5 +1,8 @@
 package com.smile.utils;
 
+import com.smile.job.JobSchedule;
+import org.quartz.SchedulerException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,4 +35,15 @@ public class BaseServlet extends HttpServlet {
                 throws ServletException, IOException {
             doGet(request, response);
         }
+
+    @Override
+    public void init() throws ServletException {
+        System.out.println("hello,i am init");
+        try {
+            JobSchedule.backupScheduler("111","222","333","444");
+            JobSchedule.recoverScherduler("555","666","777","888");
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,11 +1,10 @@
 package com.smile.bean;
 
-public class backup {
+public class Backup {
     private int backupid;
     private String backuptime;
     private String filename;
-    private String url;
-
+    private String sqlUrl;
 
     public int getBackupid() {
         return backupid;
@@ -31,12 +30,12 @@ public class backup {
         this.filename = filename;
     }
 
-    public String getUrl() {
-        return url;
+    public String getSqlUrl() {
+        return sqlUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setSqlUrl(String sqlUrl) {
+        this.sqlUrl = sqlUrl;
     }
 }
 

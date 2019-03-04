@@ -62,7 +62,7 @@ CREATE TABLE `backup` (
   `filename` varchar(50) DEFAULT NULL COMMENT '备份文件名',
   `sqlUrl` tinytext COMMENT '文件路径',
   PRIMARY KEY (`backupid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,6 +71,7 @@ CREATE TABLE `backup` (
 
 LOCK TABLES `backup` WRITE;
 /*!40000 ALTER TABLE `Backup` DISABLE KEYS */;
+INSERT INTO `backup` VALUES (1,'2019/03/04 03:03:57','2019_03_04_03-03-57.sql','D:\\IDEAworkspace\\blog\\src\\main\\webapp\\DatabaseBackup\\2019_03_04_03-03-57.sql'),(2,'2019/03/04 09:03:28','2019_03_04_09-03-28.sql','\\database\\2019_03_04_09-03-28.sql');
 /*!40000 ALTER TABLE `Backup` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -331,4 +332,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-04 15:49:58
+-- Dump completed on 2019-03-04 21:39:14
