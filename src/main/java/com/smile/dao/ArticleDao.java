@@ -79,4 +79,13 @@ public class ArticleDao {
         return isPublic;
 
     }
+
+    public void saveStaticUrl(int articleid, String url) {
+        String sql = "update article set url = ? where articleid = ?";
+        try {
+            runner.update(sql,url,articleid);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

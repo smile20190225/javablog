@@ -12,6 +12,7 @@ public class Article implements Serializable {
     int commentcount;
     String publictime;
     int articlestate;
+    String url;
 
     public Article() {
     }
@@ -86,5 +87,13 @@ public class Article implements Serializable {
 
     public void setArticlestate(int articlestate) {
         this.articlestate = articlestate;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

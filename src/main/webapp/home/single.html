@@ -107,7 +107,7 @@
                             <template v-for="uc in ucSet">
                                 <article class="comment">
                                     <header class="clearfix">
-                                        <img src="static/img/avatar.png" alt="A Smart Guy" class="avatar">
+                                        <img :src="uc.image" alt="A Smart Guy" class="avatar">
                                         <div class="meta">
                                             <h3><a href="#">{{uc.username}}</a></h3>
                                             <span class="date">{{dateFormat(uc.commenttime)}}
@@ -126,7 +126,7 @@
                                 <template v-if="uc.replyid">
                                     <article class="comment reply">
                                         <header class="clearfix">
-                                            <img src="static/img/avatar.png" alt="A Smart Guy" class="avatar">
+                                            <img :src="uc.image" alt="A Smart Guy" class="avatar">
                                             <div class="meta">
                                                 <h3><a href="#">{{uc.realname}}</a></h3>
                                                 <span class="date">{{dateFormat(uc.replytime)}}

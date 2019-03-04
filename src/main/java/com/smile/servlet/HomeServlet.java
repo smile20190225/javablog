@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.smile.bean.*;
 import com.smile.service.*;
 import com.smile.utils.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.ProgressListener;
@@ -116,7 +119,7 @@ public class HomeServlet extends BaseServlet {
         }
     }
 
-    public void isLogin(HttpServletRequest request, HttpServletResponse response){
+    public void goHome(HttpServletRequest request, HttpServletResponse response){
         response.setContentType("text/json");
         response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
@@ -497,6 +500,7 @@ public class HomeServlet extends BaseServlet {
         comment.setCommenttime(commenttime);
         comment.setCommentcontent(commentcontent);
         commentService.addComment(comment);
+        generateStaticHtml(request,response);//只要添加评论就生成一次静态页面
         try {
             if(where.equals("0"))response.sendRedirect("/blog/home/single.html?articleid="+articleid);
             else response.sendRedirect("/blog/user/details.html?articleid="+articleid);
@@ -599,5 +603,72 @@ public class HomeServlet extends BaseServlet {
         }
     }
 
+     public void generateStaticHtml(HttpServletRequest request, HttpServletResponse response){
+         //1.创建一个模板文件，/template/ftl/single.ftl
+         //2.创建一个configuration对象
+         Configuration configuration = new Configuration(Configuration.getVersion());
+         //3.设置模板文件保存的目录
+         String ftlPath = request.getServletContext().getRealPath("/template/ftl");
+         String htmlPath = request.getServletContext().getRealPath("/template/html");
+         File htmlDir = new File(htmlPath);
+         if(!htmlDir.exists()){
+             htmlDir.mkdirs();//创建文件夹
+         }
+         try {
+             configuration.setDirectoryForTemplateLoading(new File(ftlPath));
+             //4.设置模板文件编码格式
+             configuration.setDefaultEncoding("utf-8");
+             //5.加载一个模板文件，创建一个模板对象
+             Template template = configuration.getTemplate("single.ftl");
+             //6.创建一个数据集，可以是pojo，也可以是map（推荐)
+             Map data = new HashMap();
+            //获取数据
+             ArticleService articleService = new ArticleService();
+             List<Article> articleList = articleService.showAllArticle();
+             int isLogin = 0;
+             User loginUser = (User)request.getSession().getAttribute("user");
+             if(loginUser != null){
+                 isLogin = 1;
+             }
+             for(Article article:articleList){
+                 data.clear();
+                 int articleid = article.getArticleid();
+                 String fileName = "\\article_"+article.getArticleid()+".html";
+                 String savePath = htmlPath + fileName;
+                 int index = savePath.indexOf("template");
+                 String url = savePath.substring(index);
+                 System.out.println(url);
+                 //将url存入数据库
+                 articleService.saveStaticUrl(articleid,url);
+                 User articleUser = articleService.findUserById(article.getUserid());
+                 List ucSet = articleService.getUCSet(articleid);
+                 data.put("isLogin",isLogin);
+                 data.put("loginUser",loginUser);
+                 data.put("hotSet",articleList);
+                 data.put("newSet",articleList);
+                 data.put("article",article);
+                 data.put("ucSet",ucSet);
+                 data.put("articleUser",articleUser);
+                 //7.创建Writer对象，指定输出文件路径和文件名
+                 Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(savePath)),"utf-8"));
+                 //8.生成静态页面
+                 try {
+                     template.process(data,out);
+                 } catch (TemplateException e) {
+                     e.printStackTrace();
+                 }
+                 out.flush();
+                 //9.关闭流
+                 out.close();
+             }
+
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+     }
+
 
 }
+
+
+

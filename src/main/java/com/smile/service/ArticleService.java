@@ -28,4 +28,8 @@ public class ArticleService {
     public int publicArticle(Article article) {
         return articleDao.publicArticle(article);
     }
+
+    public void saveStaticUrl(int articleid, String url) {
+        articleDao.saveStaticUrl(articleid,url);
+    }
 }
